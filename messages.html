@@ -356,39 +356,60 @@
 </head>
 <body>
 
-  <!-- ══ TOPNAV ════════════════════════════════════════════ -->
+ <!-- ══ TOPNAV DINÁMICO UNIVERSAL ════════════════════════════ -->
   <nav class="topnav">
     <div class="topnav__inner">
+      <!-- Logo -->
       <a class="topnav__brand" href="index.html">
         <div class="brand-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-            <path d="M2 18h20v2H2z"/><path d="M12 4C8 4 5 8 5 12v6h14v-6c0-4-3-8-7-8z"/>
-            <line x1="12" y1="4" x2="12" y2="12"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 18h20v2H2z"/><path d="M12 4C8 4 5 8 5 12v6h14v-6c0-4-3-8-7-8z"/><line x1="12" y1="4" x2="12" y2="12"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </div>
         <span class="brand-name">Constru<em>linker</em></span>
       </a>
-      <div class="topnav__links">
-        <button class="nav-link" onclick="window.location.href='index.html'">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
-          <span>Inicio</span>
-        </button>
-        <button class="nav-link active">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          <span>Mensajes</span>
-        </button>
-        <button class="nav-link" onclick="window.location.href='index.html?page=buscar'">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          <span>Personal</span>
-        </button>
-      </div>
-      <div class="topnav__credits" onclick="window.location.href='index.html?page=creditos'">
+
+      <!-- Enlaces Dinámicos -->
+      <div class="topnav__links" id="dynamicNavLinks"></div>
+
+      <!-- Créditos (Solo Empresa) -->
+      <div class="topnav__credits" id="dynamicCredits" onclick="window.location.href='index.html?page=creditos'" style="display:none; cursor:pointer;">
         <svg viewBox="0 0 24 24" fill="currentColor" class="credits-diamond"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
-        <span id="creditsNav">10</span>
+        <span id="creditsNavHeader">0</span>
         <span class="credits-label-nav">créditos</span>
       </div>
     </div>
   </nav>
+
+  <script>
+    (function(){
+      // Lógica para pintar el menú correcto según el rol activo
+      const s = JSON.parse(localStorage.getItem('cl_session') || '{}');
+      const isWorker = s.type === 'trabajador';
+      const navContainer = document.getElementById('dynamicNavLinks');
+      const credContainer = document.getElementById('dynamicCredits');
+      const path = window.location.pathname;
+
+      if (isWorker) {
+        navContainer.innerHTML = `
+          <button class="nav-link" onclick="window.location.href='index.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg><span>Inicio</span></button>
+          <button class="nav-link" onclick="window.location.href='index.html?page=buscar'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Empresas</span></button>
+          <button class="nav-link ${path.includes('messages') ? 'active' : ''}" onclick="window.location.href='messages.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Mensajes</span></button>
+          <button class="nav-link" onclick="window.location.href='index.html?page=perfil'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Mi Perfil</span></button>
+        `;
+      } else {
+        navContainer.innerHTML = `
+          <button class="nav-link" onclick="window.location.href='index.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg><span>Inicio</span></button>
+          <button class="nav-link" onclick="window.location.href='index.html?page=buscar'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Personal</span></button>
+          <button class="nav-link ${path.includes('messages') ? 'active' : ''}" onclick="window.location.href='messages.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Mensajes</span></button>
+          <button class="nav-link ${path.includes('job-offer') ? 'active' : ''}" onclick="window.location.href='job-offer.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg><span>Publicar Oferta</span></button>
+        `;
+        credContainer.style.display = 'flex';
+        try {
+          const st = JSON.parse(localStorage.getItem('construlinker_state') || '{}');
+          document.getElementById('creditsNavHeader').textContent = st.credits ?? 10;
+        } catch(e){}
+      }
+    })();
+  </script>
 
   <!-- ══ MESSAGES SHELL ════════════════════════════════════ -->
   <div class="msg-shell" style="position:relative">
