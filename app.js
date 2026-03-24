@@ -296,10 +296,18 @@ const LS_KEY = 'construlinker_state';
 function saveState() {
   try { localStorage.setItem(LS_KEY, JSON.stringify(STATE)); } catch(e) {}
 }
+
 function loadState() {
   try {
     const s = localStorage.getItem(LS_KEY);
     if (s) STATE = { ...STATE, ...JSON.parse(s) };
+
+    // 👇 MODO DEPURACIÓN: Forzar reset cada vez que recargas 👇
+    STATE.unlocked = [1]; // Solo Rafael Montoya (ID: 1) estará desbloqueado
+    STATE.credits = 10;   // Siempre empiezas con 10 créditos
+    saveState();          // Sobrescribimos la memoria sucia del navegador
+    // 👆 ELIMINAR ESTAS 3 LÍNEAS CUANDO PASES A PRODUCCIÓN 👆
+
   } catch(e) {}
 }
 

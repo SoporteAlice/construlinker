@@ -470,6 +470,10 @@
       const s = JSON.parse(localStorage.getItem('construlinker_state') || '{}');
       STATE.credits  = s.credits  ?? 10;
       STATE.unlocked = s.unlocked ?? [];
+
+      // 👇 MODO DEPURACIÓN 👇
+      STATE.unlocked = [1];
+      STATE.credits = 10;
     } catch(e) {}
   }
   function saveState() {
