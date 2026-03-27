@@ -319,7 +319,7 @@
             <div class="cp-stats">
               <div class="cp-stat"><div class="cp-stat__n">28</div><div class="cp-stat__l">Contrataciones</div></div>
               <div class="cp-stat"><div class="cp-stat__n">${offers.length || 3}</div><div class="cp-stat__l">Ofertas activas</div></div>
-              <div class="cp-stat"><div class="cp-stat__n">${avgRating}</div><div class="cp-stat__l">Valoración media</div></div>
+              <div class="cp-stat" style="display:none"><div class="cp-stat__n">${avgRating}</div><div class="cp-stat__l">Valoración media</div></div>
             </div>
           </div>
 
@@ -343,29 +343,8 @@
           </div>
 
           <!-- Valoraciones de trabajadores -->
-          <div class="cp-card">
-            <div class="cp-card__title">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
-              Valoraciones de trabajadores
-            </div>
-            <div class="cp-rating-summary">
-              <div class="cp-rating-big">${avgRating}</div>
-              <div>
-                <div class="cp-rating-stars">${renderStars(parseFloat(avgRating))}</div>
-                <div class="cp-rating-count">${COMPANY_REVIEWS.length} valoraciones de profesionales</div>
-              </div>
-            </div>
-            ${COMPANY_REVIEWS.map(r => `
-              <div class="cp-review">
-                <div class="cp-review__header">
-                  <div class="avatar-circle sm" style="background:linear-gradient(135deg,#2A4A6E,#3A6A9E);font-size:10px;font-weight:700;color:#fff">${r.worker.split(' ').map(w=>w[0]).join('')}</div>
-                  <div class="cp-review__name">${r.worker}</div>
-                  <div style="display:flex;gap:1px">${[1,2,3,4,5].map(i=>`<span style="font-size:12px;color:${i<=r.rating?'var(--orange)':'var(--text-dim)'}">★</span>`).join('')}</div>
-                  <div class="cp-review__date">${r.date}</div>
-                </div>
-                <div class="cp-review__text">"${r.text}"</div>
-              </div>`).join('')}
-          </div>
+          <!-- Valoraciones de trabajadores -->
+<div class="cp-card" style="display:none">
 
         </div>
 

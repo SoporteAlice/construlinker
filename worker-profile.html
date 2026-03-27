@@ -365,7 +365,7 @@
   </div>
 
   <!-- ══ MODAL: LEAVE RATING ═══════════════════════════════ -->
-  <div class="modal-overlay" id="ratingModal" onclick="closeRatingModal(event)">
+  <div class="modal-overlay" id="ratingModal" onclick="closeRatingModal(event)" style="display:none !important">
     <div class="modal-box small">
       <div class="modal-header">
         <div class="modal-title">Dejar valoración</div>
@@ -546,7 +546,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="13" height="13"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
               Oferta directa
             </button>
-            <button class="btn-ghost" onclick="openRatingModal()">
+            <button class="btn-ghost" onclick="openRatingModal()" style="display:none">
               <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
               Valorar
             </button>
@@ -568,7 +568,7 @@
             ${{available:'Disponible',limited:'Disp. Limitada',busy:'No disponible'}[p.availability]}
           </div>
           ${avgRating ? `
-            <div class="pp-rating">
+            <div class="pp-rating" style="display:none">
               <div class="stars">${renderStars(parseFloat(avgRating))}</div>
               <span class="pp-rating-val">${avgRating}</span>
               <span class="pp-rating-count">(${reviews.length} valoracion${reviews.length!==1?'es':''})</span>
@@ -611,7 +611,7 @@
           </div>` : ''}
 
           <!-- Valoraciones -->
-          <div class="pp-card" id="reviewsSection">
+          <div class="pp-card" id="reviewsSection" style="display:none">
             <div class="pp-card__title"><svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Valoraciones de empresas</div>
             <div class="pp-reviews" id="reviewsList">
               ${renderReviewsList(reviews)}
