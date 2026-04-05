@@ -80,6 +80,7 @@ a { text-decoration:none; cursor:pointer; }
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   z-index: 100;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 .topnav__inner {
@@ -1014,6 +1015,7 @@ a { text-decoration:none; cursor:pointer; }
   padding:20px;
   opacity:0; pointer-events:none;
   transition:opacity .2s ease;
+  -webkit-backdrop-filter:blur(3px);
   backdrop-filter:blur(3px);
 }
 .modal-overlay.active { opacity:1; pointer-events:all; }
