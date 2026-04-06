@@ -270,7 +270,7 @@
   /* ── RENDER ───────────────────────────────────────────── */
   function renderCompanyPage(e) {
     const avgRating = (COMPANY_REVIEWS.reduce((s,r)=>s+r.rating,0)/COMPANY_REVIEWS.length).toFixed(1);
-    const offers = getPublishedOffers();
+    const offers = []; // No longer used - offers section removed
     const slug = e.nombre.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'').slice(0,20);
 
     document.title = `${e.nombre} — Construlinker`;
@@ -330,7 +330,7 @@
             </div>
             <div class="cp-stats">
               <div class="cp-stat"><div class="cp-stat__n">28</div><div class="cp-stat__l">Contrataciones</div></div>
-              <div class="cp-stat"><div class="cp-stat__n">${offers.length || 3}</div><div class="cp-stat__l">Ofertas activas</div></div>
+              <div class="cp-stat"><div class="cp-stat__n">47</div><div class="cp-stat__l">Profesionales contactados</div></div>
               <div class="cp-stat" style="display:none"><div class="cp-stat__n">${avgRating}</div><div class="cp-stat__l">Valoración media</div></div>
             </div>
           </div>
@@ -342,16 +342,6 @@
               Sobre la empresa
             </div>
             <p class="cp-about">${e.desc}</p>
-          </div>
-
-          <!-- Ofertas publicadas -->
-          <div class="cp-card">
-            <div class="cp-card__title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-              Ofertas de trabajo activas
-              <span class="badge-count">${offers.length || 3}</span>
-            </div>
-            ${renderOfertasPublicas(offers)}
           </div>
 
           <!-- Valoraciones de trabajadores -->
@@ -373,59 +363,8 @@
             </button>
           </div>
 
-          <!-- Contacto -->
-          <div class="cp-contact-card">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px">Contacto</div>
-            <div class="cp-contact-row">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              ${e.ubicacion}
-            </div>
-            ${e.telefono ? `<div class="cp-contact-row">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.1 1.22 2 2 0 012.1.01h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L6.27 7.9a16 16 0 006.18 6.18l.98-.98a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-              ${e.telefono}
-            </div>` : ''}
-            ${e.web ? `<div class="cp-contact-row">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-              <a href="https://${e.web}" target="_blank">${e.web}</a>
-            </div>` : ''}
-            <div class="cp-contact-row">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
-              RUC verificado
-            </div>
-          </div>
-
-          <!-- Compartir perfil -->
-          <div class="cp-card" style="padding:14px 16px">
-            <div class="cp-card__title" style="margin-bottom:10px">Compartir empresa</div>
-            <div style="display:flex;gap:6px">
-              <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;font-size:11px;color:var(--text-dim);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">construlinker.pe/${slug}</div>
-              <button class="btn-orange sm" onclick="copyLink('construlinker.pe/${slug}')">Copiar</button>
-            </div>
-          </div>
-
         </div>
       </div>`;
-  }
-
-  function renderOfertasPublicas(offers) {
-    const demo = [
-      { titulo:'3 Oficiales Albañiles — Torre Miraflores', cat:'Obra gruesa', ubicacion:'Miraflores, Lima', tipo:'Jornada completa', time:'Hace 2h', urgente:true },
-      { titulo:'Residente de Obra — Edificio Surco', cat:'Técnicos', ubicacion:'Surco, Lima', tipo:'Obra completa', time:'Ayer', urgente:false },
-      { titulo:'Electricista IIEE — Almacén Callao', cat:'Instalaciones', ubicacion:'Callao, Lima', tipo:'Por obra', time:'Hace 3d', urgente:false },
-    ];
-    const list = offers.length ? offers.slice(0,5) : demo;
-    if (!list.length) return '<div style="font-size:12.5px;color:var(--text-dim);padding:8px 0">No hay ofertas activas en este momento.</div>';
-    return list.map(o => `
-      <div class="cp-oferta ${(o.urgente||o.urgent)?'urgent':''}">
-        <div class="cp-of-title">
-          ${(o.urgente||o.urgent) ? '<span style="font-size:9px;font-weight:800;background:var(--orange);color:#000;padding:1px 5px;border-radius:2px;margin-right:5px">URGENTE</span>' : ''}
-          ${o.titulo || o.title || ''}
-        </div>
-        <div class="cp-of-meta">${o.cat || ''} · ${o.ubicacion || o.location || ''} · ${o.time}</div>
-        <div class="cp-of-tags">
-          <span class="cp-of-tag">${o.tipo || o.type || 'Jornada completa'}</span>
-        </div>
-      </div>`).join('');
   }
 
   function renderStars(rating) {

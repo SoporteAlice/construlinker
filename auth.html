@@ -104,6 +104,17 @@
     .switch-link{text-align:center;font-size:12.5px;color:var(--td);margin-top:12px}
     .switch-link a{color:var(--or);cursor:pointer}
 
+    /* Category chips multi-select */
+    .category-chips-wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--card);border:1px solid var(--br);border-radius:var(--ra);padding:8px 12px;min-height:40px;cursor:text;transition:border-color var(--tr)}
+    .category-chips-wrap:focus-within{border-color:var(--or);box-shadow:0 0 0 2px rgba(40,78,156,.1)}
+    .cat-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(40,78,156,.08);color:var(--or);border:1px solid rgba(40,78,156,.2);border-radius:2px;font-size:11px;font-weight:600;padding:3px 8px;white-space:nowrap}
+    .cat-chip-remove{background:none;border:none;cursor:pointer;color:var(--or);font-size:14px;line-height:1;padding:0;margin:0;opacity:.7}
+    .cat-chip-remove:hover{opacity:1}
+    .category-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .cat-btn{background:var(--card);border:1px solid var(--br);border-radius:999px;color:var(--tm);font-size:12px;padding:6px 12px;cursor:pointer;transition:all var(--tr);font-family:inherit;font-weight:500}
+    .cat-btn.sel{background:var(--or);color:#000;border-color:var(--or)}
+    .cat-btn:hover{border-color:var(--or)}
+
     @media(max-width:860px){.shell{grid-template-columns:1fr}.brand{display:none}.form-panel{padding:40px 24px}}
   </style>
 </head>
@@ -207,13 +218,9 @@
             <div class="field"><label>Apellido *</label><input type="text" id="rt-ap" placeholder="Gómez"/></div>
           </div>
           <div class="field"><label>Especialidad / Oficio *</label><input type="text" id="rt-esp" placeholder="Ej: Electricista industrial"/></div>
-          <div class="fr">
-            <div class="field"><label>Categoría</label>
-              <select id="rt-cat"><option>Obra gruesa</option><option>Acabados</option><option>Instalaciones</option><option>Maquinaria</option><option>Técnicos</option><option>Auxiliares</option></select>
-            </div>
-            <div class="field"><label>Experiencia</label>
-              <select id="rt-exp"><option value="1">Menos de 1 año</option><option value="2">1–2 años</option><option value="3">3–5 años</option><option value="6">6–9 años</option><option value="10">10+ años</option></select>
-            </div>
+          <div class="field"><label>Categorías</label>
+            <div class="category-chips-wrap" id="catChipsWrap"></div>
+            <div class="category-buttons" id="catBtns"></div>
           </div>
           <div class="field"><label>Ubicación</label><input type="text" id="rt-ubic" placeholder="Ej: Callao, España"/></div>
           <div class="field"><label>Email *</label><input type="email" id="rt-email" placeholder="tu@email.com"/></div>
@@ -254,6 +261,7 @@ function goS2(){
   g('p-name').textContent = ROL==='empresa' ? 'Empresa / Contratista' : 'Profesional de obra';
   g('p-badge').textContent= ROL==='empresa' ? 'EMPRESA' : 'TRABAJADOR';
   mode('login');
+  if(ROL==='trabajador') setTimeout(initCategories, 100);
 }
 
 function goS1(){
@@ -267,6 +275,7 @@ function mode(m){
   g('f-login').style.display           = m==='login' ? '' : 'none';
   g('f-reg-emp').style.display         = (m==='reg' && ROL==='empresa')    ? '' : 'none';
   g('f-reg-trab').style.display        = (m==='reg' && ROL==='trabajador') ? '' : 'none';
+  if(m==='reg' && ROL==='trabajador') initCategories();
   noErr();
 }
 
@@ -301,8 +310,7 @@ function doRegTrab(){
   const phone=v('rt-phone');
   try{ localStorage.setItem('cl_worker', JSON.stringify({ profile:{
     id:Date.now(), name:`${nom} ${ap}`, specialty:esp,
-    category:g('rt-cat').value, exp:parseInt(g('rt-exp').value)||1,
-    expLabel:g('rt-exp').options[g('rt-exp').selectedIndex].text,
+    category:[...regTrabCategories],
     location:v('rt-ubic')||'Lima, España',
     phone, email, whatsapp:phone.replace(/\D/g,''),
     availability:'available', tags:[], about:'',
@@ -313,6 +321,46 @@ function doRegTrab(){
   }})); }catch(e){}
   sess({ type:'trabajador', email, loggedIn:true });
   window.location.href='company-dashboard.html';
+}
+
+/* Category multi-select management */
+let regTrabCategories = [];
+const CAT_OPTS = ['Obra gruesa','Acabados','Instalaciones','Maquinaria','Técnicos','Auxiliares'];
+
+function initCategories(){
+  renderCatChips();
+  renderCatButtons();
+}
+
+function renderCatChips(){
+  const wrap = g('catChipsWrap');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  regTrabCategories.forEach(cat => {
+    const ch = document.createElement('div');
+    ch.className = 'cat-chip';
+    ch.innerHTML = `${cat}<button class="cat-chip-remove" onclick="toggleRegCat('${cat}')">×</button>`;
+    wrap.appendChild(ch);
+  });
+}
+
+function renderCatButtons(){
+  const cont = g('catBtns');
+  if(!cont) return;
+  cont.innerHTML = CAT_OPTS.map(cat => {
+    const sel = regTrabCategories.includes(cat) ? ' sel' : '';
+    return `<button type="button" class="cat-btn${sel}" onclick="toggleRegCat('${cat}')">${cat}</button>`;
+  }).join('');
+}
+
+function toggleRegCat(cat){
+  if(regTrabCategories.includes(cat)){
+    regTrabCategories = regTrabCategories.filter(x => x !== cat);
+  }else{
+    regTrabCategories.push(cat);
+  }
+  renderCatChips();
+  renderCatButtons();
 }
 
 function demo(r){

@@ -170,6 +170,7 @@
           <label class="filter-check"><input type="checkbox" class="f-disp" value="available" checked onchange="applyFilters()"> Disponible</label>
           <label class="filter-check"><input type="checkbox" class="f-disp" value="limited"   checked onchange="applyFilters()"> Disp. limitada</label>
           <label class="filter-check"><input type="checkbox" class="f-disp" value="busy"             onchange="applyFilters()"> No disponible</label>
+          <label class="filter-check"><input type="checkbox" class="f-disp" value="unlocked"         onchange="applyFilters()"> Desbloqueados</label>
         </div>
         <div class="filter-group">
           <div class="filter-group__title">Categoría</div>
@@ -180,6 +181,12 @@
           <label class="filter-check"><input type="checkbox" class="f-cat" value="Maquinaria"    onchange="applyFilters()"> Maquinaria</label>
           <label class="filter-check"><input type="checkbox" class="f-cat" value="Técnicos"      onchange="applyFilters()"> Técnicos</label>
           <label class="filter-check"><input type="checkbox" class="f-cat" value="Auxiliares"    onchange="applyFilters()"> Auxiliares</label>
+        </div>
+        <div class="filter-group">
+          <div class="filter-group__title">Ubicación</div>
+          <label class="filter-check"><input type="radio" name="location" value="all" checked onchange="applyFilters()"> Todo el país</label>
+          <label class="filter-check"><input type="radio" name="location" value="Lima" onchange="applyFilters()"> Lima Metropolitana</label>
+          <label class="filter-check"><input type="radio" name="location" value="Provincias" onchange="applyFilters()"> Provincias</label>
         </div>
         <div class="filter-group">
           <div class="filter-group__title">Experiencia</div>
@@ -274,15 +281,18 @@
           <div class="w-edit-title">Ofertas de Empleo</div>
           <div class="w-edit-sub">Publicadas por empresas en Construlinker.</div>
         </div>
-        <select class="sort-select" id="empleoFilter" onchange="renderEmpleos()">
-          <option value="all">Todas las categorías</option>
-          <option value="Obra gruesa">Obra Gruesa</option>
-          <option value="Acabados">Acabados</option>
-          <option value="Instalaciones">Instalaciones</option>
-          <option value="Maquinaria">Maquinaria</option>
-          <option value="Técnicos">Técnicos</option>
-          <option value="Auxiliares">Auxiliares</option>
-        </select>
+        <div style="display:flex;gap:12px;align-items:center">
+          <select class="sort-select" id="empleoFilter" onchange="renderEmpleos()">
+            <option value="all">Todas las categorías</option>
+            <option value="Obra gruesa">Obra Gruesa</option>
+            <option value="Acabados">Acabados</option>
+            <option value="Instalaciones">Instalaciones</option>
+            <option value="Maquinaria">Maquinaria</option>
+            <option value="Técnicos">Técnicos</option>
+            <option value="Auxiliares">Auxiliares</option>
+          </select>
+          <input type="text" class="sort-select" id="citySearch" placeholder="Ciudad o provincia…" oninput="renderEmpleos()" style="width:180px"/>
+        </div>
       </div>
       <div class="empleo-grid" id="empleoGrid"></div>
     </div>

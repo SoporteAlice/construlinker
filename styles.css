@@ -488,6 +488,7 @@ a { text-decoration:none; cursor:pointer; }
 .suggested-worker:hover .sw-name { color:var(--primary); }
 .sw-info { flex:1; min-width:0; }
 .sw-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:1px; transition:color var(--trans); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sw-code { font-size:10px; font-weight:600; color:var(--text-muted); background:var(--border); padding:1px 4px; border-radius:2px; display:inline-block; margin-bottom:2px; }
 .sw-role { font-size:11px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .sw-status {
   font-size:9.5px; font-weight:700; letter-spacing:0.5px;
@@ -637,6 +638,11 @@ a { text-decoration:none; cursor:pointer; }
   color:var(--text); margin-bottom:1px;
 }
 .prof-card__specialty { font-size:12.5px; color:var(--primary); font-weight:600; margin-bottom:8px; }
+.prof-card__code {
+  font-size:11px; font-weight:600; color:var(--text-muted);
+  background:var(--border); padding:2px 6px; border-radius:3px;
+  display:inline-block; margin-bottom:8px;
+}
 .prof-card__meta { display:flex; flex-direction:column; gap:4px; margin-bottom:10px; }
 .prof-meta-row {
   display:flex; align-items:center; gap:6px;
@@ -1348,6 +1354,7 @@ a { text-decoration:none; cursor:pointer; }
 .urgent-mini-card:hover .umc-name { color:var(--primary); }
 .umc-info { flex:1; min-width:0; }
 .umc-name { font-size:12.5px; font-weight:600; color:var(--text); transition:color var(--trans); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.umc-code { font-size:9.5px; font-weight:600; color:var(--text-muted); background:var(--border); padding:1px 3px; border-radius:2px; display:inline-block; margin:1px 0 2px; }
 .umc-role { font-size:11px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .umc-credit { font-size:9px; font-weight:700; padding:2px 5px; border-radius:2px; background:var(--orange-dim); color:var(--orange); border:1px solid rgba(231,70,32,.2); flex-shrink:0; white-space:nowrap; }
 
@@ -1445,7 +1452,7 @@ a { text-decoration:none; cursor:pointer; }
 }
 .empleo-card:hover { border-color: var(--primary); }
 .empleo-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-.empleo-company { font-size: 12px; color: var(--primary); font-weight: 500; margin-bottom: 8px; }
+.empleo-location { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
 .empleo-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
 .empleo-tag { font-size: 10px; font-weight: 500; color: var(--text-dim); border: 1px solid var(--border); padding: 2px 7px; border-radius: 2px; }
 .empleo-footer { display: flex; align-items: center; justify-content: space-between; }
@@ -1490,6 +1497,27 @@ a { text-decoration:none; cursor:pointer; }
   font-size: 13px; color: var(--text); flex: 1; min-width: 120px;
 }
 .skills-input::placeholder { color: var(--text-dim); }
+.categories-options {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+}
+.category-option {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all var(--trans);
+}
+.category-option.selected {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.category-option:hover {
+  border-color: var(--primary);
+}
 .skill-chip {
   display: inline-flex; align-items: center; gap: 5px;
   background: var(--primary-dim); color: var(--primary);
@@ -1593,4 +1621,67 @@ a { text-decoration:none; cursor:pointer; }
 }
 @media(max-width:600px) {
   .avail-selector-grid { grid-template-columns: 1fr; }
+}
+
+/* Checkbox group styles */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: all var(--trans);
+}
+
+.checkbox-item:hover {
+  border-color: var(--primary);
+  background: var(--primary-dim);
+}
+
+.checkbox-item input[type="checkbox"] {
+  margin: 0;
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+}
+
+/* Multiple select styles */
+select[multiple] {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text);
+  font-family: inherit;
+  transition: border-color var(--trans);
+}
+
+select[multiple]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+select[multiple] option {
+  padding: 4px 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+select[multiple] option:checked {
+  background: var(--primary);
+  color: white;
 }

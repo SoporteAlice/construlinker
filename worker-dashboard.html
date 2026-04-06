@@ -283,8 +283,8 @@
             <div class="edit-form">
               <div class="form-row cols-2">
                 <div class="field">
-                  <label>Categoría</label>
-                  <select id="edit-categoria" onchange="updateEditOficios()">
+                  <label>Categorías</label>
+                  <select id="edit-categoria" multiple onchange="updateEditOficios()" style="height: 120px;">
                     <option value="Obra gruesa">Obra Gruesa</option>
                     <option value="Acabados">Acabados</option>
                     <option value="Instalaciones">Instalaciones</option>
@@ -293,10 +293,18 @@
                     <option value="Auxiliares">Auxiliares</option>
                   </select>
                 </div>
+              <div class="form-row cols-2">
                 <div class="field">
                   <label>Especialidad</label>
                   <input type="text" id="edit-specialty" />
                 </div>
+                <div class="field">
+                  <label>Oficio</label>
+                  <select id="edit-oficio">
+                    <option value="">Primero selecciona categoría...</option>
+                  </select>
+                </div>
+              </div>
               </div>
               <div class="form-row cols-2">
                 <div class="field">
@@ -396,6 +404,7 @@
               <option value="Técnicos">Técnicos</option>
               <option value="Auxiliares">Auxiliares</option>
             </select>
+            <input type="text" id="citySearch" placeholder="Buscar por ciudad..." oninput="renderEmpleos()" style="padding:8px 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;background:var(--surface);color:var(--text);width:180px">
           </div>
         </div>
         <div class="empleo-grid" id="empleoGrid"></div>

@@ -496,9 +496,8 @@
 
       <div class="form-row cols-2">
         <div class="field" id="f-categoria">
-          <label>Categoría principal <span class="req">*</span></label>
-          <select id="inp-categoria" onchange="updateOficios()">
-            <option value="">Seleccionar categoría...</option>
+          <label>Categorías principales <span class="req">*</span></label>
+          <select id="inp-categoria" multiple onchange="updateOficios()" style="height: 120px;">
             <option value="Obra gruesa">Obra Gruesa</option>
             <option value="Acabados">Acabados</option>
             <option value="Instalaciones">Instalaciones</option>
@@ -506,7 +505,7 @@
             <option value="Técnicos">Técnicos y Gestión</option>
             <option value="Auxiliares">Auxiliares</option>
           </select>
-          <span class="field-error">Selecciona una categoría</span>
+          <span class="field-error">Selecciona al menos una categoría</span>
         </div>
         <div class="field" id="f-oficio">
           <label>Oficio / Especialidad <span class="req">*</span></label>
@@ -702,11 +701,19 @@ const OFICIOS = {
 };
 
 function updateOficios() {
-  const cat = document.getElementById('inp-categoria').value;
+  const selectedCategories = Array.from(document.getElementById('inp-categoria').selectedOptions).map(option => option.value);
   const sel = document.getElementById('inp-oficio');
   sel.innerHTML = '<option value="">Seleccionar oficio...</option>';
-  if (cat && OFICIOS[cat]) {
-    OFICIOS[cat].forEach(o => {
+
+  if (selectedCategories.length > 0) {
+    const allOficios = new Set();
+    selectedCategories.forEach(cat => {
+      if (OFICIOS[cat]) {
+        OFICIOS[cat].forEach(o => allOficios.add(o));
+      }
+    });
+
+    Array.from(allOficios).sort().forEach(o => {
       const opt = document.createElement('option');
       opt.value = o; opt.textContent = o;
       sel.appendChild(opt);
@@ -808,7 +815,8 @@ function validateStep(step) {
     valid &= requireField('f-ciudad',   document.getElementById('inp-ciudad').value.trim());
   }
   if (step === 2) {
-    valid &= requireField('f-categoria', document.getElementById('inp-categoria').value);
+    const selectedCategories = Array.from(document.getElementById('inp-categoria').selectedOptions);
+    valid &= requireField('f-categoria', selectedCategories.length > 0);
     valid &= requireField('f-oficio',    document.getElementById('inp-oficio').value);
     valid &= requireField('f-exp',       document.getElementById('inp-exp').value);
     const aboutOk = document.getElementById('inp-about').value.length >= 80;
@@ -837,7 +845,7 @@ function submitRegister() {
     email: document.getElementById('inp-email').value.trim(),
     phone: document.getElementById('inp-phone').value.trim(),
     location: document.getElementById('inp-ciudad').value.trim(),
-    category: document.getElementById('inp-categoria').value,
+    category: Array.from(document.getElementById('inp-categoria').selectedOptions).map(option => option.value),
     specialty: document.getElementById('inp-oficio').value,
     exp: parseInt(document.getElementById('inp-exp').value) || 1,
     expLabel: getExpLabel(document.getElementById('inp-exp').value),

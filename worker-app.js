@@ -8,6 +8,16 @@
 
 const WORKER_KEY = 'construlinker_worker';
 
+/* ── OFICIOS POR CATEGORÍA ───────────────────────────── */
+const OFICIOS = {
+  'Obra gruesa':   ['Albañil / Oficial de primera','Albañil / Oficial de segunda','Encofrador','Ferrallista','Yesero / Escayolista','Peón de albañilería','Techador / Colocador de cubiertas','Operario de impermeabilización','Montador de andamios'],
+  'Acabados':      ['Pintor de obra','Solador / Alicatador','Montador de pladur / Tabiquería seca','Colocador de pavimentos','Colocador de piedra natural / Mármol','Escayolista / Falsos techos','Colocador de carpintería interior','Especialista en aislamientos','Cristalero / Montador de ventanas','Rehabilitador de fachadas'],
+  'Instalaciones': ['Fontanero / Instalador de tuberías','Electricista de obra','Instalador de climatización (HVAC)','Instalador de gas','Instalador de sistemas solares / Fotovoltaicos','Técnico de domótica y automatización','Soldador especializado en obra'],
+  'Maquinaria':    ['Gruista (torre y móvil)','Operador de retroexcavadora','Operador de pala cargadora','Conductor de camión hormigonera','Transportista de materiales de construcción','Técnico de logística de obra'],
+  'Técnicos':      ['Arquitecto','Arquitecto técnico / Aparejador','Ingeniero Civil','Ingeniero de Instalaciones','Delineante / Proyectista','Jefe de Obra','Encargado de Obra','Residente de Obra','Técnico de PRL / SSOMA','Coordinador de Seguridad y Salud','Topógrafo','Ingeniero de Presupuestos'],
+  'Auxiliares':    ['Mozo de almacén (materiales de obra)','Operario de planta de prefabricados','Personal de limpieza post-obra','Técnico de logística de obra']
+};
+
 /* ── PERFIL DEMO (si no hay registro previo) ─────────── */
 const DEMO_WORKER = {
   id: 9001,
@@ -57,14 +67,14 @@ const DEMO_WORKER = {
 
 /* ── OFERTAS DE EMPLEO (simuladas) ───────────────────── */
 const JOB_LISTINGS = [
-  { id:"j1", title:"3 Oficiales Albañiles – Obra Miraflores",   company:"Constructora Arenas",    cat:"Obra gruesa",  tags:["Inmediato","Jornada completa","Lima"], time:"Hace 2h", urgent:true  },
-  { id:"j2", title:"Electricista IIEE – Nave Industrial Callao", company:"Buildex Contratistas",  cat:"Instalaciones",tags:["Urgente","Por obra","Callao"],           time:"Hace 5h", urgent:true  },
-  { id:"j3", title:"Residente de Obra – Edificio San Borja",     company:"Proyek Builders",       cat:"Técnicos",     tags:["Jornada completa","Experiencia 5+ años"], time:"Ayer",    urgent:false },
-  { id:"j4", title:"Pintores de obra – Proyecto Surco",          company:"Alianza Constructores", cat:"Acabados",     tags:["2 semanas","Media jornada","Surco"],       time:"Ayer",    urgent:false },
-  { id:"j5", title:"Operador Grúa Torre – Torre La Molina",      company:"Torres del Sur SAC",    cat:"Maquinaria",   tags:["Licencia vigente","1 mes","La Molina"],    time:"Hace 2d", urgent:false },
-  { id:"j6", title:"Técnico PRL – Múltiples obras",              company:"Seguridad & Obra",      cat:"Técnicos",     tags:["ISO 45001","Freelance","Lima"],            time:"Hace 3d", urgent:false },
-  { id:"j7", title:"Fontanero IISS – Edificio Barranco",         company:"InstaProyect",          cat:"Instalaciones",tags:["Por obra","3 meses","Barranco"],           time:"Hace 4d", urgent:false },
-  { id:"j8", title:"Peones construcción – Habilitación Surco",   company:"Arenas & Asociados",    cat:"Auxiliares",   tags:["Inmediato","Jornada completa","Surco"],    time:"Hace 5d", urgent:false },
+  { id:"j1", title:"3 Oficiales Albañiles – Obra Miraflores",   company:"Constructora Arenas",    cat:"Obra gruesa",  location:"Miraflores, Lima", tags:["Inmediato","Jornada completa"], time:"Hace 2h", urgent:true  },
+  { id:"j2", title:"Electricista IIEE – Nave Industrial Callao", company:"Buildex Contratistas",  cat:"Instalaciones",location:"Callao, Lima",       tags:["Urgente","Por obra"],           time:"Hace 5h", urgent:true  },
+  { id:"j3", title:"Residente de Obra – Edificio San Borja",     company:"Proyek Builders",       cat:"Técnicos",     location:"San Borja, Lima",   tags:["Jornada completa","Experiencia 5+ años"], time:"Ayer",    urgent:false },
+  { id:"j4", title:"Pintores de obra – Proyecto Surco",          company:"Alianza Constructores", cat:"Acabados",     location:"Surco, Lima",       tags:["2 semanas","Media jornada"],       time:"Ayer",    urgent:false },
+  { id:"j5", title:"Operador Grúa Torre – Torre La Molina",      company:"Torres del Sur SAC",    cat:"Maquinaria",   location:"La Molina, Lima",   tags:["Licencia vigente","1 mes"],    time:"Hace 2d", urgent:false },
+  { id:"j6", title:"Técnico PRL – Múltiples obras",              company:"Seguridad & Obra",      cat:"Técnicos",     location:"Lima Metropolitana",tags:["ISO 45001","Freelance"],            time:"Hace 3d", urgent:false },
+  { id:"j7", title:"Fontanero IISS – Edificio Barranco",         company:"InstaProyect",          cat:"Instalaciones",location:"Barranco, Lima",     tags:["Por obra","3 meses"],           time:"Hace 4d", urgent:false },
+  { id:"j8", title:"Peones construcción – Habilitación Surco",   company:"Arenas & Asociados",    cat:"Auxiliares",   location:"Surco, Lima",       tags:["Inmediato","Jornada completa"],    time:"Hace 5d", urgent:false },
 ];
 
 /* ── ESTADO GLOBAL ───────────────────────────────────── */
@@ -387,10 +397,24 @@ function renderEditPage() {
   document.getElementById('edit-email').value     = WORKER.email || '';
   document.getElementById('edit-location').value  = WORKER.location || '';
   document.getElementById('edit-specialty').value = WORKER.specialty || '';
+  document.getElementById('edit-oficio').value = WORKER.oficio || '';
   document.getElementById('edit-about').value     = WORKER.about || '';
 
+  // Category multiple select
   const catSel = document.getElementById('edit-categoria');
-  if (catSel) catSel.value = WORKER.category || '';
+  if (catSel) {
+    // Clear existing selections
+    Array.from(catSel.options).forEach(option => option.selected = false);
+    // Set selected options based on WORKER.category
+    const workerCats = Array.isArray(WORKER.category) ? WORKER.category : [WORKER.category].filter(Boolean);
+    workerCats.forEach(cat => {
+      const option = Array.from(catSel.options).find(opt => opt.value === cat);
+      if (option) option.selected = true;
+    });
+  }
+
+  // Trigger update of oficios if categories are selected
+  updateEditOficios();
 
   const expSel = document.getElementById('edit-exp');
   if (expSel) expSel.value = String(WORKER.exp) || '3';
@@ -411,8 +435,9 @@ function saveProfile() {
   WORKER.email    = document.getElementById('edit-email').value.trim();
   WORKER.location = document.getElementById('edit-location').value.trim();
   WORKER.specialty= document.getElementById('edit-specialty').value.trim();
+  WORKER.oficio   = document.getElementById('edit-oficio').value.trim();
   WORKER.about    = document.getElementById('edit-about').value.trim();
-  WORKER.category = document.getElementById('edit-categoria').value;
+  WORKER.category = Array.from(document.getElementById('edit-categoria').selectedOptions).map(option => option.value);
   WORKER.exp      = parseInt(document.getElementById('edit-exp').value) || 3;
   WORKER.tags     = [...editSkills];
   saveWorker();
@@ -462,6 +487,30 @@ function renderEditSkills() {
     chip.innerHTML = `${s}<button class="skill-chip__remove" onclick="editSkills=editSkills.filter(x=>x!=='${s}');renderEditSkills()">×</button>`;
     wrap.insertBefore(chip, inp);
   });
+}
+
+/* ── UPDATE EDIT OFICIOS ─────────────────────────────── */
+function updateEditOficios() {
+  const selectedCategories = Array.from(document.getElementById('edit-categoria').selectedOptions).map(option => option.value);
+  const sel = document.getElementById('edit-oficio');
+  if (!sel) return;
+
+  sel.innerHTML = '<option value="">Seleccionar oficio...</option>';
+
+  if (selectedCategories.length > 0) {
+    const allOficios = new Set();
+    selectedCategories.forEach(cat => {
+      if (OFICIOS[cat]) {
+        OFICIOS[cat].forEach(o => allOficios.add(o));
+      }
+    });
+
+    Array.from(allOficios).sort().forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o; opt.textContent = o;
+      sel.appendChild(opt);
+    });
+  }
 }
 
 /* ── RENDER: DOCUMENTOS ──────────────────────────────── */
@@ -517,10 +566,16 @@ function renderEmpleos() {
   const grid = document.getElementById('empleoGrid');
   if (!grid) return;
   const filter = document.getElementById('empleoFilter')?.value || 'all';
-  const filtered = filter === 'all' ? JOB_LISTINGS : JOB_LISTINGS.filter(j => j.cat === filter);
+  const citySearch = document.getElementById('citySearch')?.value?.trim().toLowerCase() || '';
+
+  let filtered = JOB_LISTINGS.filter(j => {
+    const catMatch = filter === 'all' || j.cat === filter;
+    const cityMatch = !citySearch || j.location.toLowerCase().includes(citySearch);
+    return catMatch && cityMatch;
+  });
 
   if (!filtered.length) {
-    grid.innerHTML = `<div class="w-empty-state" style="grid-column:1/-1">Sin ofertas para esta categoría en este momento.</div>`;
+    grid.innerHTML = `<div class="w-empty-state" style="grid-column:1/-1">Sin ofertas para esta categoría y ciudad en este momento.</div>`;
     return;
   }
 
@@ -529,7 +584,7 @@ function renderEmpleos() {
       <div class="empleo-card__header">
         <div class="empleo-body">
           <div class="empleo-title">${j.title}</div>
-          <div class="empleo-company">${j.company}</div>
+          <div class="empleo-location">${j.location}</div>
         </div>
       </div>
       <div class="empleo-tags">
@@ -549,7 +604,7 @@ function renderEmpleos() {
 function applyJob(id) {
   const job = JOB_LISTINGS.find(j=>j.id===id);
   if (!job) return;
-  showToast('Solicitud enviada', `Tu perfil fue enviado a ${job.company}.`);
+  showToast('Solicitud enviada', 'Tu perfil fue enviado a la empresa.');
 }
 
 /* ── TIPS SIDEBAR ────────────────────────────────────── */

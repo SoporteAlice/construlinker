@@ -5,6 +5,16 @@
 ═══════════════════════════════════════════════════════════ */
 'use strict';
 
+/* ── FUNCIÓN HELPER: FORMATEAR NOMBRE ──────────────────── */
+function formatNameWithInitial(fullName) {
+  if (!fullName) return '';
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length <= 1) return fullName;
+  const firstName = parts[0];
+  const lastNameInitial = parts[1][0].toUpperCase();
+  return `${firstName} ${lastNameInitial}.`;
+}
+
 /* ─── SESIÓN ─────────────────────────────────────────────── */
 function getSession() {
   try { return JSON.parse(localStorage.getItem('cl_session') || '{}'); } catch(e) { return {}; }
@@ -53,16 +63,11 @@ function saveWorker() {
 function defaultWorker() {
   return {
     id:9001, name:'Juan Gómez', specialty:'Oficial 1ª Pladur / Tabiquería Seca',
-    category:'Acabados', exp:3, expLabel:'3–5 años',
+    category:'Acabados',
     location:'Callao, Lima', availability:'available',
     tags:['Pladur','Tabiquería seca','Falsos techos','Nivel láser'],
     about:'Oficial de primera especializado en montaje de pladur y tabiquería seca.',
     phone:'+51 987 123 456', email:'juan@gmail.com', whatsapp:'51987123456',
-    exp:3,
-    experience:[
-      { company:'Constructora Arenas', role:'Oficial de Pladur', years:'3', period:'2019-2022', details:'Montaje de tabiques y falsos techos en proyectos residenciales.' },
-      { company:'Buildex Contratistas', role:'Carpintero', years:'2', period:'2017-2019', details:'Instalación de encofrados y revestimientos en obra civil.' }
-    ],
     docs:{ cv:false, cvName:'', prl:false, prlName:'', cert:false, certName:'', dni:false, dniName:'' },
     viewedBy:[
       { company:'Constructora Arenas', action:'Ver contacto',  time:'Hace 2 horas', color:['#7F2A4A','#4A2A7F'] },
@@ -149,10 +154,6 @@ function buildEmpresaNav() {
 ═══════════════════════════════════════════════════════════ */
 function buildWorkerNav() {
   document.getElementById('navRoleLinks').innerHTML = `
-    <button class="nav-link" data-page="buscar" onclick="navigate('buscar')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
-      <span>Empresas</span>
-    </button>
     <button class="nav-link" data-page="actividad" onclick="navigate('actividad')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
       <span>Actividad</span>
@@ -225,7 +226,7 @@ function buildWorkerSidebar() {
   if (!W) return;
   const ini = W.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   const cfg = AVAIL[W.availability] || AVAIL.available;
-  const checks = [!!W.name, !!W.specialty, (W.about||'').length>=50, !!W.docs?.cv, !!W.docs?.prl, (W.tags||[]).length>0];
+  const checks = [!!W.name, !!W.specialty, (W.about||'').length>=50, (W.tags||[]).length>0];
   const pct = Math.round(checks.filter(Boolean).length / checks.length * 100);
 
   document.getElementById('sidebarLeft').innerHTML = `
@@ -235,7 +236,7 @@ function buildWorkerSidebar() {
         <div class="profile-card__avatar-wrap">
           <div class="avatar-circle lg" style="background:linear-gradient(135deg,#3A1A6E,#6A2A9E)">${ini}</div>
         </div>
-        <div class="profile-card__name">${W.name}</div>
+        <div class="profile-card__name">${formatNameWithInitial(W.name)}</div>
         <div class="profile-card__role">${W.specialty}</div>
         <div class="profile-card__divider"></div>
         <div class="wpc-avail ${cfg.cls}" style="display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:3px;font-size:11.5px;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px">
@@ -261,7 +262,6 @@ function buildWorkerSidebar() {
       <div class="widget__title">Accesos rápidos</div>
       <nav class="category-nav">
         <a class="cat-item" onclick="navigate('empleo')"><span class="cat-emoji">💼</span><span>Ofertas de Empleo</span></a>
-        <a class="cat-item" onclick="navigate('documentos')"><span class="cat-emoji">📄</span><span>Mis Documentos</span></a>
         <a class="cat-item" onclick="navigate('actividad')"><span class="cat-emoji">📊</span><span>Mi Actividad</span></a>
         <a class="cat-item" onclick="document.getElementById('hireModal').classList.add('active')"><span class="cat-emoji">🤝</span><span>Confirmar Contratación</span></a>
       </nav>
@@ -335,9 +335,7 @@ function buildWorkerComposer() {
   if (av) { av.textContent=ini; av.style.background='linear-gradient(135deg,#3A1A6E,#6A2A9E)'; }
   document.getElementById('composerHint').textContent = 'Comparte tu experiencia o busca nuevas oportunidades…';
   document.getElementById('composerActions').innerHTML = `
-    <button class="composer-btn" onclick="navigate('empleo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="15" height="15"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> Ver ofertas de empleo</button>
-    <button class="composer-btn" onclick="navigate('buscar')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="15" height="15"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Ver empresas</button>
-    <button class="composer-btn" onclick="navigate('documentos')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="15" height="15"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg> Mis documentos</button>`;
+    <button class="composer-btn" onclick="navigate('empleo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="15" height="15"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> Ver ofertas de empleo</button>`;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -441,69 +439,40 @@ function renderUrgentesPage() {
 
 /* ── OFERTAS DE EMPLEO (trabajador) ──────────────────────── */
 const JOB_LIST = [
-  {id:'j1',title:'3 Oficiales Albañiles – Obra Miraflores',    company:'Constructora Arenas',   cat:'Obra gruesa',  tags:['Inmediato','Jornada completa','Lima'],  time:'Hace 2h',  urgent:true },
-  {id:'j2',title:'Electricista IIEE – Nave Industrial Callao', company:'Buildex Contratistas',  cat:'Instalaciones',tags:['Urgente','Por obra','Callao'],           time:'Hace 5h',  urgent:true },
-  {id:'j3',title:'Residente de Obra – Edificio San Borja',     company:'Proyek Builders',       cat:'Técnicos',     tags:['Jornada completa','5+ años'],            time:'Ayer',     urgent:false},
-  {id:'j4',title:'Pintores de obra – Proyecto Surco',          company:'Alianza Constructores', cat:'Acabados',     tags:['2 semanas','Media jornada'],              time:'Ayer',     urgent:false},
-  {id:'j5',title:'Operador Grúa Torre – Torre La Molina',      company:'Torres del Sur SAC',    cat:'Maquinaria',   tags:['Licencia vigente','1 mes'],               time:'Hace 2d',  urgent:false},
-  {id:'j6',title:'Técnico PRL – Múltiples obras Lima',         company:'Seguridad & Obra',      cat:'Técnicos',     tags:['ISO 45001','Freelance','Lima'],            time:'Hace 3d',  urgent:false},
+  {id:'j1',title:'3 Oficiales Albañiles – Obra Miraflores',    company:'Constructora Arenas',   cat:'Obra gruesa',  location:'Miraflores, Lima', tags:['Inmediato','Jornada completa'],  time:'Hace 2h',  urgent:true },
+  {id:'j2',title:'Electricista IIEE – Nave Industrial Callao', company:'Buildex Contratistas',  cat:'Instalaciones',location:'Callao, Lima',       tags:['Urgente','Por obra'],           time:'Hace 5h',  urgent:true },
+  {id:'j3',title:'Residente de Obra – Edificio San Borja',     company:'Proyek Builders',       cat:'Técnicos',     location:'San Borja, Lima',   tags:['Jornada completa','5+ años'],            time:'Ayer',     urgent:false},
+  {id:'j4',title:'Pintores de obra – Proyecto Surco',          company:'Alianza Constructores', cat:'Acabados',     location:'Surco, Lima',       tags:['2 semanas','Media jornada'],              time:'Ayer',     urgent:false},
+  {id:'j5',title:'Operador Grúa Torre – Torre La Molina',      company:'Torres del Sur SAC',    cat:'Maquinaria',   location:'La Molina, Lima',   tags:['Licencia vigente','1 mes'],               time:'Hace 2d',  urgent:false},
+  {id:'j6',title:'Técnico PRL – Múltiples obras Lima',         company:'Seguridad & Obra',      cat:'Técnicos',     location:'Lima Metropolitana',tags:['ISO 45001','Freelance'],            time:'Hace 3d',  urgent:false},
 ];
 
 function renderEmpleos() {
   const grid = document.getElementById('empleoGrid');
   if (!grid) return;
   const f = document.getElementById('empleoFilter')?.value || 'all';
-  const list = f==='all' ? JOB_LIST : JOB_LIST.filter(j=>j.cat===f);
+  const citySearch = document.getElementById('citySearch')?.value?.trim().toLowerCase() || '';
+
+  const list = JOB_LIST.filter(j => {
+    const catMatch = f === 'all' || j.cat === f;
+    const cityMatch = !citySearch || j.location.toLowerCase().includes(citySearch);
+    return catMatch && cityMatch;
+  });
+
   grid.innerHTML = list.map(j=>`
     <div class="empleo-card ${j.urgent?'urgent-card':''}">
       <div class="empleo-title">${j.urgent?'<span style="font-size:9px;font-weight:800;background:var(--orange);color:#000;padding:1px 5px;border-radius:2px;margin-right:5px">URGENTE</span>':''}${j.title}</div>
-      <div class="empleo-company">${j.company}</div>
+      <div class="empleo-location">${j.location}</div>
       <div class="empleo-tags">${j.tags.map(t=>`<span class="empleo-tag">${t}</span>`).join('')}</div>
       <div class="empleo-footer">
         <span class="empleo-time">${j.time}</span>
-        <button class="btn-orange sm" onclick="applyJob('${j.id}','${j.company}')">Aplicar</button>
+        <button class="btn-orange sm" onclick="applyJob('${j.id}')">Aplicar</button>
       </div>
     </div>`).join('');
 }
 
-function applyJob(id, company) {
-  showToast('Solicitud enviada', `Tu perfil fue enviado a ${company}.`);
-}
-
-/* ── DOCUMENTOS (trabajador) ─────────────────────────────── */
-const DOCS = [
-  {id:'cv',  icon:'📄', name:'Currículum Vitae',    desc:'Tu historial profesional. PDF o Word.'},
-  {id:'prl', icon:'🦺', name:'Certificado PRL',      desc:'Prevención de Riesgos. Obligatorio en obras.'},
-  {id:'cert',icon:'🏅', name:'Certificados / Cursos',desc:'Titulaciones o formación específica.'},
-  {id:'dni', icon:'🪪', name:'DNI / NIE',             desc:'Documento de identidad para verificación.'},
-];
-
-function renderDocsPage() {
-  const grid = document.getElementById('docsGrid');
-  if (!grid || !W) return;
-  grid.innerHTML = DOCS.map(d => {
-    const up = W.docs?.[d.id];
-    return `
-      <div class="doc-main-card ${up?'uploaded':''}">
-        <div class="doc-main-icon">${d.icon}</div>
-        <div class="doc-main-name">${d.name}</div>
-        <div class="doc-main-desc">${d.desc}</div>
-        <div class="doc-main-status ${up?'doc-status-ok':'doc-status-miss'}">${up?'✓ SUBIDO':'NO SUBIDO'}</div>
-        <input type="file" id="df-${d.id}" accept=".pdf,.doc,.docx,.jpg,.png" onchange="uploadDoc('${d.id}')"/>
-        <button class="doc-upload-btn" onclick="document.getElementById('df-${d.id}').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          ${up?'Reemplazar':'Subir documento'}
-        </button>
-      </div>`;
-  }).join('');
-}
-
-function uploadDoc(id) {
-  if (!W) return;
-  W.docs = W.docs || {};
-  W.docs[id] = true;
-  saveWorker(); renderDocsPage();
-  showToast(`${DOCS.find(d=>d.id===id)?.name} subido`, 'Las empresas pueden descargarlo con 1 crédito.');
+function applyJob(id) {
+  showToast('Solicitud enviada', 'Tu perfil fue enviado a la empresa.');
 }
 
 /* ── ACTIVIDAD ───────────────────────────────────────────── */
@@ -578,11 +547,12 @@ function renderPerfilPage() {
 
 /* ── PERFIL TRABAJADOR ───────────────────────────────────── */
 let editSkills = [];
-let editExperience = [];
+let editCategories = [];
 function renderWorkerPerfil() {
   if (!W) return;
+  editSkillsInited = false;
   editSkills = [...(W.tags||[])];
-  editExperience = [...(W.experience||[])];
+  editCategories = Array.isArray(W.category) ? [...W.category] : W.category ? [W.category] : [];
   document.getElementById('perfilContent').innerHTML = `
     <div class="w-edit-layout">
       <div class="w-edit-header">
@@ -619,7 +589,6 @@ function renderWorkerPerfil() {
             </div>
             <div class="form-row cols-2">
               <div class="field"><label>Ubicación</label><input type="text" id="epL" value="${W.location||''}"/></div>
-              <div class="field"><label>Años de experiencia</label><input type="number" id="epTotalExp" min="0" value="${W.exp||''}"/></div>
             </div>
           </div>
         </div>
@@ -627,7 +596,12 @@ function renderWorkerPerfil() {
           <div class="w-edit-card__title">Perfil profesional</div>
           <div class="edit-form">
             <div class="form-row cols-2">
-              <div class="field"><label>Categoría</label><select id="epCat">${['Obra gruesa','Acabados','Instalaciones','Maquinaria','Técnicos','Auxiliares'].map(c=>`<option ${W.category===c?'selected':''}>${c}</option>`).join('')}</select></div>
+              <div class="field">
+                <label>Categorías</label>
+                <div class="skills-input-wrap" id="categoriesWrap"></div>
+                <div class="categories-options" id="categoriesOptions"></div>
+                <span class="field-error" id="catError" style="display:none">Selecciona al menos una categoría</span>
+              </div>
               <div class="field"><label>Especialidad</label><input type="text" id="epSp" value="${W.specialty||''}"/></div>
             </div>
             <div class="form-row"><div class="field"><label>Sobre mí</label><textarea id="epAb" rows="4">${W.about||''}</textarea></div></div>
@@ -640,58 +614,9 @@ function renderWorkerPerfil() {
           </div>
         </div>
       </div>
-
-      <div class="w-edit-card full-width">
-        <div class="w-edit-card__title">Experiencia laboral</div>
-        <div class="edit-form" id="expList">
-          ${editExperience.map((exp, idx)=>`
-            <div class="exp-row" style="border:1px solid var(--border);padding:10px;margin-bottom:8px;border-radius:var(--radius);">
-              <div class="form-row cols-2">
-                <div class="field"><label>Empresa</label><input type="text" value="${exp.company||''}" oninput="updateExperienceField(${idx},'company',this.value)"/></div>
-                <div class="field"><label>Puesto</label><input type="text" value="${exp.role||''}" oninput="updateExperienceField(${idx},'role',this.value)"/></div>
-              </div>
-              <div class="form-row cols-2">
-                <div class="field"><label>Años</label><input type="number" min="0" value="${exp.years||''}" oninput="updateExperienceField(${idx},'years',this.value)"/></div>
-                <div class="field"><label>Periodo</label><input type="text" value="${exp.period||''}" oninput="updateExperienceField(${idx},'period',this.value)"/></div>
-              </div>
-              <div class="form-row"><div class="field"><label>Descripción</label><textarea rows="2" oninput="updateExperienceField(${idx},'details',this.value)">${exp.details||''}</textarea></div></div>
-              <div style="text-align:right"><button class="btn-ghost" onclick="removeWorkerExperience(${idx})">Eliminar</button></div>
-            </div>`).join('')}
-          <button class="btn-ghost" style="width:fit-content;margin-top:6px" onclick="addWorkerExperience()">+ Agregar experiencia</button>
-        </div>
-      </div>
-
-      <div class="w-edit-card full-width">
-        <div class="w-edit-card__title">Documentos</div>
-        <div class="edit-form">
-          <div class="form-row cols-2">
-            <div class="field">
-              <label>Currículum (CV)</label>
-              <input type="file" id="epCv" onchange="handleDocFile('cv',this.files[0])"/>
-              <small>${W.docs?.cv ? 'Subido: '+(W.docs.cvName||'CV') : 'No cargado'}</small>
-            </div>
-            <div class="field">
-              <label>Certificados</label>
-              <input type="file" id="epCert" onchange="handleDocFile('cert',this.files[0])"/>
-              <small>${W.docs?.cert ? 'Subido: '+(W.docs.certName||'Certificado') : 'No cargado'}</small>
-            </div>
-          </div>
-          <div class="form-row cols-2">
-            <div class="field">
-              <label>PRL</label>
-              <input type="file" id="epPrl" onchange="handleDocFile('prl',this.files[0])"/>
-              <small>${W.docs?.prl ? 'Subido: '+(W.docs.prlName||'PRL') : 'No cargado'}</small>
-            </div>
-            <div class="field">
-              <label>DNI / NIE</label>
-              <input type="file" id="epDni" onchange="handleDocFile('dni',this.files[0])"/>
-              <small>${W.docs?.dni ? 'Subido: '+(W.docs.dniName||'DNI/NIE') : 'No cargado'}</small>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>`;
   initSkills();
+  initCategories();
 }
 
 function setAvail(av) {
@@ -711,11 +636,8 @@ function saveWorkerPerfil() {
   W.location    = gv('epL')   || W.location;
   W.specialty   = gv('epSp')  || W.specialty;
   W.about       = gv('epAb')  || W.about;
-  W.category    = document.getElementById('epCat')?.value || W.category;
-  W.exp         = parseInt(gv('epTotalExp')) || W.exp;
+  W.category    = [...editCategories];
   W.tags        = [...editSkills];
-  W.experience  = [...editExperience];
-  W.docs        = W.docs || {};
   saveWorker(); buildWorkerSidebar(); updateAvailNav();
   showToast('Perfil actualizado', 'Los cambios ya son visibles para las empresas.');
 }
@@ -748,27 +670,40 @@ function renderSkills() {
   });
 }
 
-function addWorkerExperience() {
-  editExperience.push({company:'', role:'', years:'', period:'', details:''});
-  renderWorkerPerfil();
+const CATEGORY_OPTIONS = ['Obra gruesa','Acabados','Instalaciones','Maquinaria','Técnicos','Auxiliares'];
+function initCategories() {
+  renderCategories();
 }
 
-function removeWorkerExperience(i) {
-  editExperience.splice(i,1);
-  renderWorkerPerfil();
+function renderCategories() {
+  const wrap = document.getElementById('categoriesWrap');
+  if (!wrap) return;
+  wrap.querySelectorAll('.skill-chip').forEach(c => c.remove());
+  editCategories.forEach(cat => {
+    const ch = document.createElement('div');
+    ch.className = 'skill-chip';
+    ch.innerHTML = `${cat}<button class="skill-chip__remove" onclick="toggleCategory('${cat}')">×</button>`;
+    wrap.appendChild(ch);
+  });
+  renderCategoryOptions();
 }
 
-function updateExperienceField(i,key,value) {
-  if (!editExperience[i]) return;
-  editExperience[i][key] = value;
+function renderCategoryOptions() {
+  const container = document.getElementById('categoriesOptions');
+  if (!container) return;
+  container.innerHTML = CATEGORY_OPTIONS.map(cat => {
+    const selected = editCategories.includes(cat) ? ' selected' : '';
+    return `<button type="button" class="category-option${selected}" onclick="toggleCategory('${cat}')">${cat}</button>`;
+  }).join('');
 }
 
-function handleDocFile(type,file) {
-  if (!W || !file) return;
-  W.docs = W.docs || {};
-  W.docs[type] = true;
-  W.docs[`${type}Name`] = file.name;
-  showToast('Documento cargado', file.name);
+function toggleCategory(cat) {
+  if (editCategories.includes(cat)) {
+    editCategories = editCategories.filter(x => x !== cat);
+  } else {
+    editCategories.push(cat);
+  }
+  renderCategories();
 }
 
 /* ── PERFIL EMPRESA ──────────────────────────────────────── */
@@ -894,7 +829,6 @@ function patchNavigate() {
     if (page === 'buscar'    && window.IS_WORKER) renderEmpresasPage();
     if (page === 'urgentes')    renderUrgentesPage();
     if (page === 'empleo')      renderEmpleos();
-    if (page === 'documentos')  renderDocsPage();
     if (page === 'actividad')   renderActividadPage();
     if (page === 'perfil')      renderPerfilPage();
     // Recalcular actUnlocked/actCredits en perfil empresa

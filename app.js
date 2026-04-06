@@ -5,10 +5,21 @@
 
 'use strict';
 
+/* ── FUNCIÓN HELPER: FORMATEAR NOMBRE ──────────────────── */
+function formatNameWithInitial(fullName) {
+  if (!fullName) return '';
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length <= 1) return fullName;
+  const firstName = parts[0];
+  const lastNameInitial = parts[1][0].toUpperCase();
+  return `${firstName} ${lastNameInitial}.`;
+}
+
 /* ── DATOS: PROFESIONALES ───────────────────────────────── */
 const PROFESSIONALS = [
   {
     id: 1,
+    code: "CL-001",
     name: "Rafael Montoya",
     specialty: "Ing. Civil Estructural",
     category: "Técnicos",
@@ -25,6 +36,7 @@ const PROFESSIONALS = [
   },
   {
     id: 2,
+    code: "CL-002",
     name: "Valeria Torres",
     specialty: "Arquitecta Senior",
     category: "Técnicos",
@@ -41,6 +53,7 @@ const PROFESSIONALS = [
   },
   {
     id: 3,
+    code: "CL-003",
     name: "Carlos Espinoza",
     specialty: "Maestro de Obra",
     category: "Obra gruesa",
@@ -57,6 +70,7 @@ const PROFESSIONALS = [
   },
   {
     id: 4,
+    code: "CL-004",
     name: "Sofía Quispe",
     specialty: "Técnico de PRL / SSOMA",
     category: "Técnicos",
@@ -73,6 +87,7 @@ const PROFESSIONALS = [
   },
   {
     id: 5,
+    code: "CL-005",
     name: "Diego Paredes",
     specialty: "Residente de Obra",
     category: "Técnicos",
@@ -89,6 +104,7 @@ const PROFESSIONALS = [
   },
   {
     id: 6,
+    code: "CL-006",
     name: "Lucía Benítez",
     specialty: "Electricista Industrial",
     category: "Instalaciones",
@@ -105,6 +121,7 @@ const PROFESSIONALS = [
   },
   {
     id: 7,
+    code: "CL-007",
     name: "Marco Ríos",
     specialty: "Oficial Albañil",
     category: "Obra gruesa",
@@ -121,6 +138,7 @@ const PROFESSIONALS = [
   },
   {
     id: 8,
+    code: "CL-008",
     name: "Ana Fuentes",
     specialty: "Pintora de Acabados",
     category: "Acabados",
@@ -137,6 +155,7 @@ const PROFESSIONALS = [
   },
   {
     id: 9,
+    code: "CL-009",
     name: "Pedro Cárdenas",
     specialty: "Operador de Grúa",
     category: "Maquinaria",
@@ -153,6 +172,7 @@ const PROFESSIONALS = [
   },
   {
     id: 10,
+    code: "CL-010",
     name: "Rosa Mamani",
     specialty: "Gasfitero / Sanitaria",
     category: "Instalaciones",
@@ -169,6 +189,7 @@ const PROFESSIONALS = [
   },
   {
     id: 11,
+    code: "CL-011",
     name: "Jorge Huanca",
     specialty: "Peón de Construcción",
     category: "Auxiliares",
@@ -185,6 +206,7 @@ const PROFESSIONALS = [
   },
   {
     id: 12,
+    code: "CL-012",
     name: "Sandra Vargas",
     specialty: "Ing. de Presupuestos",
     category: "Técnicos",
@@ -346,7 +368,8 @@ function renderUrgentes() {
       <div class="urgent-mini-card" onclick="accessUrgentProfile(${p.id})">
         <div class="avatar-circle sm" style="${grad}">${p.initials}</div>
         <div class="umc-info">
-          <div class="umc-name">${p.name}</div>
+          <div class="umc-name">${formatNameWithInitial(p.name)}</div>
+          <div class="umc-code">${p.code}</div>
           <div class="umc-role">${p.specialty}</div>
         </div>
         <span class="umc-credit">1 crédito</span>
@@ -628,7 +651,8 @@ function renderSuggested() {
     <div class="suggested-worker" onclick="window.location.href='worker-profile.html?id=${p.id}'">
       <div class="avatar-circle sm" style="background:linear-gradient(135deg,${p.color[0]},${p.color[1]})">${p.initials}</div>
       <div class="sw-info">
-        <div class="sw-name">${p.name}</div>
+        <div class="sw-name">${formatNameWithInitial(p.name)}</div>
+        <div class="sw-code">${p.code}</div>
         <div class="sw-role">${p.specialty}</div>
       </div>
       <span class="sw-status ${p.availability}">${p.availability === 'available' ? 'Disponible' : 'Limitado'}</span>
@@ -693,17 +717,41 @@ function renderProfGrid() {
   const catCbs   = [...document.querySelectorAll('.f-cat:checked')].map(cb => cb.value);
   const allCats  = catCbs.includes('all');
   const expVal   = document.querySelector('input[name="exp"]:checked')?.value || 'all';
+  const locationVal = document.getElementById('locationSearch')?.value?.trim().toLowerCase() || '';
   const sort     = document.getElementById('sortSelect')?.value || 'recent';
 
   // Categoria 7 — Listado general: ignora filtro de categoria
   const isTodos = STATE.activeFilter.cat === 'todos';
 
   let filtered = PROFESSIONALS.filter(p => {
-    if (!dispVals.includes(p.availability)) return false;
-    if (!isTodos && !allCats && !catCbs.includes(p.category)) return false;
+    // Lógica especial para filtro "unlocked"
+    const isUnlockedSelected = dispVals.includes('unlocked');
+    const otherDispVals = dispVals.filter(v => v !== 'unlocked');
+
+    // Si "unlocked" está seleccionado, incluir perfiles desbloqueados
+    if (isUnlockedSelected && STATE.unlocked.includes(p.id)) return true;
+
+    // Para otros filtros de disponibilidad
+    if (otherDispVals.length > 0 && !otherDispVals.includes(p.availability)) return false;
+
+    // Si solo "unlocked" está seleccionado y no hay otros filtros, solo mostrar desbloqueados
+    if (isUnlockedSelected && otherDispVals.length === 0 && !STATE.unlocked.includes(p.id)) return false;
+
+    if (!isTodos && !allCats) {
+      const profCats = Array.isArray(p.category) ? p.category : [p.category];
+      const hasMatch = catCbs.some(cat => profCats.includes(cat));
+      if (!hasMatch) return false;
+    }
     if (expVal === 'junior' && p.exp > 3)   return false;
     if (expVal === 'mid' && (p.exp < 4 || p.exp > 9)) return false;
     if (expVal === 'senior' && p.exp < 10)  return false;
+
+    // Filtro de ubicación
+    if (locationVal) {
+      const location = p.location.toLowerCase();
+      if (!location.includes(locationVal)) return false;
+    }
+
     return true;
   });
 
@@ -797,8 +845,9 @@ function renderProfCard(p) {
         </span>
       </div>
       <div class="prof-card__body">
-        <div class="prof-card__name">${p.name}</div>
+        <div class="prof-card__name">${formatNameWithInitial(p.name)}</div>
         <div class="prof-card__specialty">${p.specialty}</div>
+        <div class="prof-card__code">${p.code}</div>
         <div class="prof-card__meta">
           <div class="prof-meta-row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
@@ -970,7 +1019,7 @@ function openWorkerModal(id) {
     <div class="wm-avatar-zone">
       <div class="avatar-circle xl" style="${grad}">${p.initials}</div>
       <div class="wm-identity">
-        <div class="wm-name">${p.name}</div>
+        <div class="wm-name">${formatNameWithInitial(p.name)}</div>
         <div class="wm-spec">${p.specialty}</div>
       </div>
       <button class="modal-close" onclick="closeModal('workerModal')">
